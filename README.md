@@ -1,41 +1,63 @@
+Here's the `README.md` file for your tool **Creeper**, including installation steps and usage instructions:
+
+---
+
 # Creeper Web Crawler & Vulnerability Scanner
 
-Creeper is a versatile web crawler designed for penetration testing and vulnerability scanning. It offers multiple features, such as checking for robots.txt paths, identifying injection points in URLs, fetching older versions of websites, subdomain enumeration, directory scanning, and performing Nikto and Nuclei scans for security assessment.
+**Creeper** is a web crawling and vulnerability scanning tool that helps security professionals identify potential injection points, scan subdomains, check paths from robots.txt, and fetch historical versions of websites using the Wayback Machine. Additionally, it integrates with tools like **Nikto**, **Nuclei**, **Subfinder**, and **Dirsearch** for comprehensive web security analysis.
 
 ## Features
 
-1. **Crawl and Find Injection Points**
-   - Scans URLs for query parameters and identifies potential payload injection points.
+- Find potential URL injection points for testing SQLi and XSS vulnerabilities.
+- Automatically download and check paths from `robots.txt` for accessible files and directories.
+- Fetch and scan older versions of websites using the **Wayback Machine**.
+- Perform scans using **Nikto** and **Nuclei** for known vulnerabilities.
+- Discover subdomains using **Subfinder** and scan them using **Dirsearch**.
+- Automated scanning using the `--all` option to run all available scans.
 
-2. **Robots.txt Handling**
-   - Downloads and parses the `robots.txt` file, checks the status of disallowed paths, and saves URLs with 200, 301, or 302 status codes.
+## Prerequisites
 
-3. **Wayback Machine Integration**
-   - Fetches historical versions of websites from the Wayback Machine and optionally runs Nikto and Nuclei scans on older versions.
+Before installing **Creeper**, ensure that you have the following tools installed:
 
-4. **Nikto and Nuclei Scans**
-   - Performs Nikto and Nuclei scans to check for known vulnerabilities and misconfigurations in web servers.
+- **Nikto**: Web server scanner
+- **Nuclei**: Vulnerability scanner
+- **Subfinder**: Subdomain discovery tool
+- **Dirsearch**: Directory brute-force tool
 
-5. **Subdomain Enumeration**
-   - Uses `Subfinder` to enumerate subdomains of the target domain and scans them with `Dirsearch` to find directories and files.
+You can install these tools as follows:
+
+```bash
+# Install Nikto
+sudo apt-get install nikto
+
+# Install Nuclei
+go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+
+# Install Subfinder
+go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+
+# Install Dirsearch
+git clone https://github.com/maurosoria/dirsearch.git
+cd dirsearch
+pip3 install -r requirements.txt
+```
 
 ## Installation
 
-Ensure you have Python 3.x and the necessary libraries installed before running the tool:
+To install **Creeper**, clone this repository and install the required Python libraries:
 
 ```bash
-pip install requests beautifulsoup4
+# Clone the repository
+git clone https://github.com/yourusername/creeper.git
+
+# Navigate to the Creeper directory
+cd creeper
+
+# Install required Python packages
+pip install -r requirements.txt
 ```
 
-You also need to have the following tools installed and available in your system's PATH:
-- Nikto
-- Nuclei
-- Subfinder
-- Dirsearch
-
 ## Usage
-
-To run the tool, use the following format:
 
 ```bash
 python creeper.py <url> [options]
@@ -43,52 +65,52 @@ python creeper.py <url> [options]
 
 ### Options
 
-- `-h`: Show this help message.
-- `-r`: Download and check paths from `robots.txt`.
-- `-i`: Find potential injection points in URL query parameters.
-- `-w`: Fetch historical versions of the website from the Wayback Machine.
-- `-n`: Run a Nikto scan on the given URL.
-- `-c`: Run a Nuclei scan on the given URL.
-- `-s`: Enumerate subdomains using Subfinder.
-- `-u`: Run Dirsearch on subdomains found by Subfinder.
-- `--all`: Run all scans automatically.
+| Flag  | Description                                                                                                                                               |
+|-------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `-h`  | Show help message and usage information.                                                                                                                  |
+| `-r`  | Check paths from robots.txt. Downloads `/robots.txt`, extracts disallowed paths, and checks for valid paths (200 status code).                             |
+| `-i`  | Find potential injection points in the URL. Scans URL parameters for possible payload injection points.                                                    |
+| `-w`  | Fetch old versions from the Wayback Machine. Retrieves historical versions of the site using the Wayback Machine.                                          |
+| `-n`  | Run Nikto scan on the given URL. Performs a Nikto scan to check for known vulnerabilities and misconfigurations.                                           |
+| `-c`  | Run Nuclei scan on the given URL. Runs a Nuclei scan to identify vulnerabilities using predefined templates.                                               |
+| `-s`  | Enumerate subdomains. Uses **Subfinder** to discover and list subdomains of the given URL.                                                                 |
+| `-u`  | Run **Dirsearch** on found subdomains. Scans the subdomains found with `-s` for directories and files using **Dirsearch**.                                 |
+| `--all` | Run all scans (robots.txt, Nikto, Nuclei, subdomains). Automatically executes all scans and confirms "yes" for Nikto and Nuclei.                         |
 
-### Examples
+### Example Commands
 
-- To find injection points and scan directories:
-  ```bash
-  python creeper.py https://example.com -i -u
-  ```
+```bash
+# Scan a URL for injection points and check robots.txt
+python creeper.py https://example.com -i -r
 
-- To check paths from robots.txt and fetch historical snapshots:
-  ```bash
-  python creeper.py https://example.com -r -w
-  ```
+# Fetch Wayback Machine snapshots and run Nikto scan
+python creeper.py https://example.com -w -n
 
-- To run all scans on a website:
-  ```bash
-  python creeper.py https://example.com --all
-  ```
+# Find subdomains and scan them using Dirsearch
+python creeper.py https://example.com -s -u
 
-## Outputs
+# Run all scans (robots.txt, Nikto, Nuclei, subdomains)
+python creeper.py https://example.com --all
+```
 
-- **Injection Points**: Saved in a file named `<domain>_injection_points.txt`.
-- **Status Links**: Paths with status codes (200, 301, 302) are saved in `<domain>_status_links.txt`.
-- **Subdomains**: Subdomains discovered by Subfinder are saved in `<domain>_subdomains.txt`.
-- **Dirsearch Results**: Each subdomain's directory scan results are saved in `<subdomain>_dirsearch_results.txt`.
-- **Wayback Snapshots**: Historical snapshots are saved in `<domain>_wayback_snapshots.txt`.
+### Advanced Usage
 
-## Dependencies
-
-- Python 3.x
-- `requests`
-- `beautifulsoup4`
-- Tools: Nikto, Nuclei, Subfinder, Dirsearch
-
-## License
-
-This tool is open-source and available under the MIT License.
+- Use the `--all` option to run all scans in a single command, automating the full analysis of the target website.
+- Use `-r` to check for restricted paths from `robots.txt` and automatically detect which ones are accessible (return a 200 status code).
+- Combine different options to tailor the scanning process according to your requirements, such as running subdomain discovery with **Subfinder** and scanning those subdomains with **Dirsearch**.
 
 ---
 
-Feel free to contribute or open issues for bug reports and feature requests!
+## Contributing
+
+Feel free to submit issues and pull requests if you have ideas to improve the tool. Contributions are welcome!
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+### Author
+- **Your Name** - (https://github.com/Faruxss)
+
