@@ -165,11 +165,14 @@ def fetch_wayback_versions(url, max_results=13, auto_run=False):
                         snapshots.append(snapshot_url)
                 
                 print(f"\nSnapshots saved to {filename}.")
-                
+
                 if auto_run:
                     automated_snapshot_scanning(snapshots, run_nikto='y', run_nuclei='y')
                 else:
-                    automated_snapshot_scanning(snapshots)
+                    # Ask user if they want to run scans on snapshots
+                    run_nikto = input("Do you want to run Nikto scan on Wayback URLs? (y/n): ").lower()
+                    run_nuclei = input("Do you want to run Nuclei scan on Wayback URLs? (y/n): ").lower()
+                    automated_snapshot_scanning(snapshots, run_nikto=run_nikto, run_nuclei=run_nuclei)
             else:
                 print(f"No snapshots found for {url}.")
         else:
@@ -177,15 +180,25 @@ def fetch_wayback_versions(url, max_results=13, auto_run=False):
     except Exception as e:
         print(f"Error fetching Wayback Machine data: {e}")
 
+
 def subfinder_scan(domain):
     """Run Subfinder to find subdomains for the given domain."""
     print(f"\nRunning Subfinder on {domain} ...")
-    os.system(f"subfinder -d {domain} -o {domain}_subdomains.txt -silent")
-    print(f"Subdomains saved to {domain}_subdomains.txt.")
     
-    # Start Dirsearch on the found subdomains if -u option is used
-    if "-u" in sys.argv:
-        run_dirsearch_on_subdomains(domain)
+    # Make sure to include full path to subfinder in case PATH is an issue
+    subfinder_cmd = f"subfinder -d {domain} -o {domain}_subdomains.txt -silent"
+    
+    result = os.system(subfinder_cmd)
+    
+    if result != 0:
+        print(f"Subfinder failed to find subdomains for {domain}. Check if Subfinder is installed properly.")
+    else:
+        print(f"Subdomains saved to {domain}_subdomains.txt.")
+        
+        # Start Dirsearch on the found subdomains if -u option is used
+        if "-u" in sys.argv:
+            run_dirsearch_on_subdomains(domain)
+
 
 def run_dirsearch_on_subdomains(domain):
     """Run Dirsearch on the subdomains found by Subfinder."""
@@ -279,8 +292,6 @@ Examples:
 
 """
     print(help_message)
-
-
 def main():
     if len(sys.argv) < 2:
         print_help()
@@ -288,10 +299,9 @@ def main():
 
     url = sys.argv[1]
     
-      # New feature: the --all flag to execute all operations
+    # New feature: the --all flag to execute all operations
     if '--all' in sys.argv:
         print("\n--all flag detected. Running all scans automatically...\n")
-        # Perform all operations with automatic 'yes' for Nikto and Nuclei scans
         show_intro(url)
         crawl_and_find_injection_points(url)
         subfinder_scan(url)
@@ -336,8 +346,7 @@ def main():
      
     if "-i" in sys.argv:
        visited_pages = set()
-       find_injection_points_in_page(url, visited_pages)   
+       find_injection_points_in_page(url, visited_pages)
 
-if __name__ == "__main__":
-    main()
-
+if __name__ == '__main__':
+    main()  # Corrected function call
