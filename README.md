@@ -13,6 +13,8 @@
 - Fetch and scan older versions of websites using the **Wayback Machine**.
 - Perform scans using **Nikto** and **Nuclei** for known vulnerabilities.
 - Discover subdomains using **Subfinder** and scan them using **Dirsearch**.
+- Perform an **Nmap** scan to detect open ports and services.
+- Check for potential API key or secret exposure in JavaScript files.
 - Automated scanning using the `--all` option to run all available scans.
 
 ## Prerequisites
@@ -23,6 +25,7 @@ Before installing **Creeper**, ensure that you have the following tools installe
 - **Nuclei**: Vulnerability scanner
 - **Subfinder**: Subdomain discovery tool
 - **Dirsearch**: Directory brute-force tool
+- **Nmap**: Network mapping tool
 
 You can install these tools using the following commands:
 
@@ -40,6 +43,9 @@ go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 git clone https://github.com/maurosoria/dirsearch.git
 cd dirsearch
 pip3 install -r requirements.txt
+
+# Install Nmap
+sudo apt-get install nmap
 ```
 
 ## Installation
@@ -48,7 +54,7 @@ To install **Creeper**, clone this repository and install the required Python li
 
 ```bash
 # Clone the repository
-git clone https://github.com/Faruxss/creeper.git
+git clone https://github.com/yourusername/creeper.git
 
 # Navigate to the Creeper directory
 cd creeper
@@ -75,7 +81,9 @@ python creeper.py <url> [options]
 | `-c`    | Run Nuclei scan on the given URL. Runs a Nuclei scan to identify vulnerabilities using predefined templates.                                               |
 | `-s`    | Enumerate subdomains. Uses **Subfinder** to discover and list subdomains of the given URL.                                                                 |
 | `-u`    | Run **Dirsearch** on found subdomains. Scans the subdomains found with `-s` for directories and files using **Dirsearch**.                                 |
-| `--all` | Run all scans (robots.txt, Nikto, Nuclei, subdomains). Automatically executes all scans and confirms "yes" for Nikto and Nuclei.                         |
+| `-m`    | Run **Nmap** scan on the given URL. Performs an Nmap scan with OS detection and version detection (`-A`) to identify open ports and services.              |
+| `-k`    | Check for API key exposure. Scans JavaScript files for potential API keys or secrets.                                                                      |
+| `--all` | Run all scans (robots.txt, Nikto, Nuclei, subdomains). Automatically executes all scans and confirms "yes" for Nikto and Nuclei.                           |
 
 ### Example Commands
 
@@ -88,6 +96,12 @@ python creeper.py https://example.com -w -n
 
 # Find subdomains and scan them using Dirsearch
 python creeper.py https://example.com -s -u
+
+# Run an Nmap scan to detect open ports and services
+python creeper.py https://example.com -m
+
+# Check for API key exposure in JavaScript files
+python creeper.py https://example.com -k
 
 # Run all scans (robots.txt, Nikto, Nuclei, subdomains)
 python creeper.py https://example.com --all
