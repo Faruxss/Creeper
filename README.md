@@ -54,7 +54,7 @@ To install **Creeper**, clone this repository and install the required Python li
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/creeper.git
+git clone https://github.com/Faruxss/creeper.git
 
 # Navigate to the Creeper directory
 cd creeper
